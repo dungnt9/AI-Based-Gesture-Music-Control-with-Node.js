@@ -1,7 +1,7 @@
 {
   "name": "bo_tay_ra",
   "version": "0.1.0",
-  "homepage": "https://dungnt9.github.io/The-website-raises-its-hand-to-play-music",
+  "homepage": "https://dungnt9.github.io/hand-music-AI",
   "private": true,
   "dependencies": {
     "@mycv/f8-notification": "^1.0.1",
