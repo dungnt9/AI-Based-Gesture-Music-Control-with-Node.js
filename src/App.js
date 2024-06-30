@@ -21,6 +21,9 @@ function App() {
   const canPlaySound = useRef(true)
   const mobilenetModule =useRef()
 
+  const [trainingProgress, setTrainingProgress] = useState(0);
+  const [isTouched, setIsTouched] = useState(false);
+
   const init = async() =>{
     await setupCamera()
     
@@ -58,19 +61,20 @@ function App() {
     console.log(`[${label}] Đang train...`)
     for (let i = 0 ; i<TRAINING_TIMES; ++i){
       console.log(`Progress ${parseInt((i+1)/TRAINING_TIMES * 100)}%`)
+      setTrainingProgress(parseInt((i+1)/TRAINING_TIMES * 100));
       await training(label)
     }
   }
 
   const training = label => {
     return new Promise(async resolve => {
-      const embedding = mobilenetModule.current.infer(    //lấy ảnh hiện tại cho vào biến embedding
+      const embedding = mobilenetModule.current.infer(
         video.current,
         true
       );
-      classifier.current.addExample(embedding, label);    //gán nhãn cho ảnh embedding
+      classifier.current.addExample(embedding, label);
       await sleep(100);
-      resolve()  //báo hiệu Promise đã xong
+      resolve()
     })
   }
 
@@ -87,15 +91,16 @@ function App() {
         canPlaySound.current=false
         sound.play()
       }
+      setIsTouched(true);
     }
     else{
       console.log("Not touched")
       sound.pause()
       canPlaySound.current=true
+      setIsTouched(false);
     }
     
-    await sleep(200) //kiểm tra 5 lần/ 1 giây
-
+    await sleep(200)
     run()
   }
 
@@ -128,7 +133,11 @@ function App() {
         <button className="btn" onClick={() => {run()}}> Run </button>
       </div>
       <br></br>
-      <h3>Hướng dẫn sử dụng: Không giơ tay và ấn train 1 đợi 30s, sau đó giơ tay và ấn train 2 đợi 30s, sau đó Run</h3>
+      <h2>Hướng dẫn sử dụng: Không giơ tay và ấn train 1 đợi Training Progress hoàn thành, sau đó giơ tay và ấn train 2 đợi Training Progress hoàn thành, sau đó Run</h2>
+      <div className="overlay">
+        <p>Training Progress: {trainingProgress}%</p>
+        <p>Status: {isTouched ? "Touched" : "Not touched"}</p>
+      </div>
     </div>
   );
 }
